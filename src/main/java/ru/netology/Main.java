@@ -13,9 +13,9 @@ public class Main {
 
         // server.add_handler("POST", "/messages", (request, responseStream) -> server.responseWithoutContent(responseStream, "503", "Service Unavailable"));
 
-        server.add_handler("GET", "/", ((request, outputStream) -> server.good_request(outputStream, "index.html")));
+        server.addHandler("GET", "/", ((request, outputStream) -> server.goodRequest(outputStream, "index.html")));
 
-        server.start_server();
+        server.startServer();
 
     }
 }

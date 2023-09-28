@@ -22,13 +22,13 @@ public class Server {
         handlers = new HashMap<>();
     }
 
-    public void add_handler(String method, String path, Handler handler) {
+    public void addHandler(String method, String path, Handler handler) {
         if (!handlers.containsKey(method + " " + path)) {
             handlers.put(method + " " + path, handler);
         }
     }
 
-    public void start_server() throws IOException {
+    public void startServer() throws IOException {
         try (final var serverSocket = new ServerSocket(9999)) {
             while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
@@ -65,7 +65,7 @@ public class Server {
 
 
             if (request == null || !handlers.containsKey(request.getMethod())) {
-                bad_request(out, "400", "Bad Request");
+                badRequest(out, "400", "Bad Request");
                 return;
             }
 
@@ -76,9 +76,9 @@ public class Server {
             } else {
 
                 if (!validPaths.contains(request.getHeaders())) {
-                    bad_request(out, "404", "Not Found");
+                    badRequest(out, "404", "Not Found");
                 } else {
-                    good_request(out, path);
+                    goodRequest(out, path);
                 }
             }
 
@@ -87,7 +87,7 @@ public class Server {
         }
     }
 
-    void good_request(BufferedOutputStream out, String path) throws IOException {
+    void goodRequest(BufferedOutputStream out, String path) throws IOException {
         final var filePath = Path.of(".", "public", path);
         final var mimeType = Files.probeContentType(filePath);
 
@@ -122,7 +122,7 @@ public class Server {
         out.flush();
     }
 
-    void bad_request(BufferedOutputStream out, String responseCode, String responseStatus) throws IOException {
+    void badRequest(BufferedOutputStream out, String responseCode, String responseStatus) throws IOException {
         out.write((
                 "HTTP/1.1 " + responseCode + " " + responseStatus + "\r\n" +
                         "Content-Length: 0\r\n" +
@@ -133,7 +133,7 @@ public class Server {
     }
 
 
-    public void add_connection(String responseCode, String responseStatus) throws IOException {
+    public void addConnection(String responseCode, String responseStatus) throws IOException {
         Runnable worker = new WorkerThread(serverSocket, handlers, responseCode, responseStatus);
         executor.execute(worker);
 
