@@ -15,6 +15,8 @@ public class Main {
 
         server.addHandler("GET", "/", ((request, outputStream) -> server.goodRequest(outputStream, "index.html")));
 
+        server.addHandler("GET", "/png", ((request, outputStream) -> server.goodRequest(outputStream, "spring.png")));
+
         server.startServer();
 
     }
