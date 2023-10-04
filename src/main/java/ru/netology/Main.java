@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Server server = new Server();
 
-        // server.add_handler("POST", "/messages", (request, responseStream) -> server.responseWithoutContent(responseStream, "503", "Service Unavailable"));
+        server.addHandler("POST", "/messages", (request, responseStream) -> server.badRequest(responseStream, "503", "Service Unavailable"));
 
         server.addHandler("GET", "/", ((request, outputStream) -> server.goodRequest(outputStream, "index.html")));
 
