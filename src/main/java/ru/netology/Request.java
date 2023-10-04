@@ -38,4 +38,20 @@ public class Request {
         return new ArrayList<>();
 
     }
+
+    public NameValuePair getQueryParam(String name) {
+        return getQueryParams().stream()
+                .filter(param -> param.getName().equalsIgnoreCase(name))
+                .findFirst().orElse(new NameValuePair() {
+                    @Override
+                    public String getName() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getValue() {
+                        return null;
+                    }
+                });
+    }
 }
