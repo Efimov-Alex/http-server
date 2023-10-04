@@ -3,6 +3,8 @@ package ru.netology;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -10,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.apache.http.NameValuePair;
+
 
 public class Server {
 
@@ -32,7 +37,13 @@ public class Server {
         try (final var serverSocket = new ServerSocket(9999)) {
             while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
-                executor.execute(() -> proceedConnection(socket));
+                executor.execute(() -> {
+                    try {
+                        proceedConnection(socket);
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -41,7 +52,7 @@ public class Server {
         }
     }
 
-    private void proceedConnection(Socket socket) {
+    private void proceedConnection(Socket socket) throws URISyntaxException {
         try (final var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              final var out = new BufferedOutputStream(socket.getOutputStream())) {
 
@@ -50,6 +61,7 @@ public class Server {
             final var requestLine = in.readLine();
 
             final var parts = requestLine.split(" ");
+
 
             if (parts.length != 3) {
                 // just close socket
@@ -65,12 +77,15 @@ public class Server {
             }
 
 
-            if (request == null || !handlers.containsKey(request.getMethod() + " " + request.getHeaders())) {
+            List<NameValuePair> queryParamsparams = request.getQueryParams();
+
+
+            if (request == null || !handlers.containsKey(request.getMethod() + " " + request.getPath())) {
                 badRequest(out, "400", "Bad Request");
                 return;
             }
 
-            String requestPath = request.getMethod() + " " + request.getHeaders();
+            String requestPath = request.getMethod() + " " + request.getPath();
 
 
             if (handlers.containsKey(requestPath)) {
