@@ -16,9 +16,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 
 public class Request {
     private String method;
-    private String headers;
-
-    String[] listHeaders;
+    private String path;
 
 
     private static final String GET = "GET";
@@ -27,17 +25,16 @@ public class Request {
     private List<String> headersParams;
     private List<NameValuePair> params;
 
-    public Request(String method, String headers) {
+    public Request(String method, String path) throws URISyntaxException {
+        URI url = new URI(path);
         this.method = method;
-        this.headers = headers;
-        listHeaders = headers.split("\\?");
-
+        this.path = url.getPath();
 
     }
 
-    public Request(String method, String headers, List<String> headersParams, List<NameValuePair> params) {
+    public Request(String method, String path, List<String> headersParams, List<NameValuePair> params) {
         this.method = method;
-        this.headers = headers;
+        this.path = path;
         this.headersParams = headersParams;
         this.params = params;
     }
@@ -94,16 +91,16 @@ public class Request {
         return method;
     }
 
-    public String getHeaders() {
-        return listHeaders[0];
+    public String getPath() {
+        return path;
+    }
+
+    public List<String> getHeaders() {
+        return headersParams;
     }
 
     public List<NameValuePair> getQueryParams() {
-        if (headers.split("\\?").length > 1) {
-            return URLEncodedUtils.parse(headers.split("\\?")[1], Charset.forName("utf-8"));
-
-        }
-        return new ArrayList<>();
+        return params;
 
     }
 

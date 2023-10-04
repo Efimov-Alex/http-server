@@ -77,18 +77,15 @@ public class Server {
             }
 
 
-            List<NameValuePair> params = request.getQueryParams();
+            List<NameValuePair> queryParamsparams = request.getQueryParams();
 
-            for (int i = 0; i < params.size(); i++) {
-                System.out.println(params.get(i));
-            }
 
-            if (request == null || !handlers.containsKey(request.getMethod() + " " + request.getHeaders())) {
+            if (request == null || !handlers.containsKey(request.getMethod() + " " + request.getPath())) {
                 badRequest(out, "400", "Bad Request");
                 return;
             }
 
-            String requestPath = request.getMethod() + " " + request.getHeaders();
+            String requestPath = request.getMethod() + " " + request.getPath();
 
 
             if (handlers.containsKey(requestPath)) {
