@@ -8,15 +8,21 @@ import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 public class WorkerThread implements Runnable {
     ServerSocket serverSocket;
     final List<String> validPaths = List.of("/index.html", "/spring.svg", "/spring.png", "/resources.html", "/styles.css", "/app.js", "/links.html", "/forms.html", "/classic.html", "/events.html", "/events.js");
+    String responseCode;
+    String responseStatus;
+    HashMap<String, Handler> handlers;
 
-
-    public WorkerThread(ServerSocket serverSocket) throws IOException {
+    public WorkerThread(ServerSocket serverSocket, HashMap<String, Handler> handlers, String responseCode, String responseStatus) throws IOException {
         this.serverSocket = serverSocket;
+        this.handlers = handlers;
+        this.responseCode = responseCode;
+        this.responseStatus = responseStatus;
     }
 
 
@@ -73,9 +79,8 @@ public class WorkerThread implements Runnable {
 
             final var length = Files.size(filePath);
             out.write((
-                    "HTTP/1.1 200 OK\r\n" +
-                            "Content-Type: " + mimeType + "\r\n" +
-                            "Content-Length: " + length + "\r\n" +
+                    "HTTP/1.1 " + responseCode + " " + responseStatus + "\r\n" +
+                            "Content-Length: 0\r\n" +
                             "Connection: close\r\n" +
                             "\r\n"
             ).getBytes());

@@ -8,15 +8,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Main {
-  public static void main(String[] args) throws IOException {
-    Server server = new Server();
+    public static void main(String[] args) throws IOException {
+        Server server = new Server();
 
-    server.add_connection();
+        // server.add_handler("POST", "/messages", (request, responseStream) -> server.responseWithoutContent(responseStream, "503", "Service Unavailable"));
 
+        server.addHandler("GET", "/", ((request, outputStream) -> server.goodRequest(outputStream, "index.html")));
 
+        server.addHandler("GET", "/png", ((request, outputStream) -> server.goodRequest(outputStream, "spring.png")));
 
+        server.startServer();
 
-  }
+    }
 }
 
 
